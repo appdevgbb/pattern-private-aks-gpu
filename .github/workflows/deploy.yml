@@ -1,0 +1,43 @@
+name: Deploy AKS Cluster
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '**.bicep'
+      - 'deploy.sh'
+      - '.github/workflows/deploy.yml'
+
+env:
+  RESOURCE_GROUP: rg-pvt-aks-h100
+  LOCATION: eastus2
+  REGISTRY_NAME: gbbpvt
+  CLUSTER_NAME: pvt-aks-h100
+  TEMPLATE_FILE: main.bicep
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Create resource group if it doesn’t exist
+        run: |
+          az group create --name "${{ env.RESOURCE_GROUP }}" --location "${{ env.LOCATION }}" 
+
+      - name: Deploy Bicep Template
+        uses: azure/arm-deploy@v1
+        with:
+          resource-group: ${{ env.RESOURCE_GROUP }}
+          template: ${{ env.TEMPLATE_FILE }}
+          parameters: |
+            registryName=${{ env.REGISTRY_NAME }}
+            managedClusterName=${{ env.CLUSTER_NAME }}
+            resourceGroupName=${{ env.RESOURCE_GROUP }}
