@@ -127,6 +127,23 @@ Here is an example using User Assigned Managed Identity
     EOF
     ```
 
+# Set variables
+RESOURCE_GROUP="rg-pvt-aks-h100"
+MI_NAME="github-actions-identity"
+
+# Get identity info
+CLIENT_ID=$(az identity show -g "$RESOURCE_GROUP" -n "$MI_NAME" --query clientId -o tsv)
+TENANT_ID=$(az account show --query tenantId -o tsv)
+SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+
+echo ""
+echo "✅ Copy the following values into your GitHub repository secrets:"
+echo ""
+echo "AZURE_CLIENT_ID=$CLIENT_ID"
+echo "AZURE_TENANT_ID=$TENANT_ID"
+echo "AZURE_SUBSCRIPTION_ID=$SUBSCRIPTION_ID"
+
+
 Finally:
 
 * Go to your GitHub repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
