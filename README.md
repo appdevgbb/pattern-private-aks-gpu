@@ -128,7 +128,7 @@ Here is an example using User Assigned Managed Identity
     SUBSCRIPTION_ID=$(az account show --query id -o tsv)
     
     echo ""
-    echo "✅ Copy the following values into your GitHub repository secrets:"
+    echo "Copy the following values into your GitHub repository secrets:"
     echo ""
     echo "AZURE_CLIENT_ID=$CLIENT_ID"
     echo "AZURE_TENANT_ID=$TENANT_ID"
@@ -139,17 +139,15 @@ Finally:
 
 * Go to your GitHub repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
 
-* Name it: `AZURE_CREDENTIALS`
+* Create 3 new secrets: `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID` with the values from the correspondent variables above.
 
-* Paste the output as the value
-
-Once done, the GitHub Action (.github/workflows/deploy.yml) will be able to authenticate and deploy your infrastructure using the `deploy.yml` workflow.
+Once done, the GitHub Action (.github/workflows/deploy.yml) will be able to authenticate and deploy your infrastructure using the [`deploy.yml`](.github/workflows/deploy.yml) workflow.
 
 ## Adding acrPull to the kubelet
 
 After the cluster is deployed and the Azure Container Registry is created, you can now give the user managed identity used by GitHub Actions the `User Access Administrator` role. This allows for the pipeline uer managed ID to assign a role to the kubelet ID:
 
-    ```bash
+```bash
     ACR_ID=$(az acr show -n "$REGISTRY_NAME" -g "$RESOURCE_GROUP" --query id -o tsv)
 
     # Assign "User Access Administrator" to allow role assignments
@@ -157,5 +155,6 @@ After the cluster is deployed and the Azure Container Registry is created, you c
       --assignee-object-id "$MI_PRINCIPAL_ID" \
       --role "User Access Administrator" \
       --scope "$ACR_ID"
-    ```
-Once this is done, you can now run the `attach-aks-to-acr.yml` workflow.
+```
+
+Once this is done, you can now run the [`attach-aks-to-acr.yml`](.github/workflows/attach-aks-to-acr.yml) workflow.

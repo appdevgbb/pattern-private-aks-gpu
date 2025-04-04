@@ -1,4 +1,4 @@
-name: Attach AKS to ACR with User Assigned Managed Identity
+name: Step 2 - Attach AKS to ACR with User Assigned Managed Identity
 description: |
   This workflow attaches an Azure Kubernetes Service (AKS) cluster to an Azure Container Registry (ACR) using a User Assigned Managed Identity.
   It assigns the AcrPull role to the kubelet identity of the AKS cluster.
