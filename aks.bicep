@@ -230,4 +230,4 @@ resource registries 'Microsoft.ContainerRegistry/registries@2024-11-01-preview' 
 }
 
 output kubeletPrincipalId string = managedCluster.properties.identityProfile.kubeletidentity.objectId
-output registryId string = registries.id
+output registryResource resource = registry

@@ -19,6 +19,6 @@ module attachAcr 'acr.bicep' = {
   scope: resourceGroup(resourceGroupName)
   params: {
     principalId: infra.outputs.kubeletPrincipalId
-    registries: infra.outputs.registryId
+    registryResource: infra.outputs.registryResource
   }
 }

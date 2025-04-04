@@ -1,9 +1,9 @@
 param principalId string
-param registries string
+param registryResource resource
 
 resource acrPull 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(registries, principalId, 'acrpull')
-  scope: registries
+  name: guid(registryResource.id, principalId, 'acrpull')
+  scope: registryResource
     properties: {
     roleDefinitionId: subscriptionResourceId(
       'Microsoft.Authorization/roleDefinitions',
