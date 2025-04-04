@@ -3,6 +3,7 @@ param clusterName string
 param managedClusterName string = 'aks-${clusterName}'
 param resourceGroupName string = 'rg-${managedClusterName}'
 param location string = 'eastus2'
+param subscriptionId string
 
 resource acr 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' existing = {
   name: registryName
@@ -21,8 +22,9 @@ module infra 'aks.bicep' = {
 
 module attachAcr 'acr.bicep' = {
   name: 'grantAcrAccess'
-  scope: acr
+  scope: subscription()
   params: {
     principalId: infra.outputs.kubeletPrincipalId
+    registryId: acr.id
   }
 }
