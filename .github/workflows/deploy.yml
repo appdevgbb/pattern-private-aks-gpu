@@ -48,3 +48,4 @@ jobs:
             registryName=${{ env.REGISTRY_NAME }}
             clusterName=${{ env.CLUSTER_NAME }}
             resourceGroupName=${{ env.RESOURCE_GROUP }}
+            location=${{ env.LOCATION }}
