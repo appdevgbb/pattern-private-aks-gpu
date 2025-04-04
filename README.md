@@ -102,14 +102,6 @@ Here is an example using User Assigned Managed Identity
       --assignee-object-id "$MI_PRINCIPAL_ID" \
       --role Contributor \
       --scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP
-    
-    ACR_ID=$(az acr show -n "$REGISTRY_NAME" -g "$RESOURCE_GROUP" --query id -o tsv)
-
-    # Assign "User Access Administrator" to allow role assignments
-    az role assignment create \
-      --assignee-object-id "$MI_PRINCIPAL_ID" \
-      --role "User Access Administrator" \
-      --scope "$ACR_ID"
     ```
 
 1. Configure Federated Identity Credential for GitHub
@@ -130,38 +122,18 @@ Here is an example using User Assigned Managed Identity
 
 1. Create the **AZURE_CREDENTIALS** Secret for GitHub
 
-    Generate the credentials JSON:
-
     ```bash
-    cat <<EOF
-    {
-      "clientId": "$CLIENT_ID",
-      "subscriptionId": "$SUBSCRIPTION_ID",
-      "tenantId": "$TENANT_ID",
-      "activeDirectoryEndpointUrl": "https://login.microsoftonline.com",
-      "resourceManagerEndpointUrl": "https://management.azure.com/",
-      "authorityHost": "https://login.microsoftonline.com",
-      "clientCertificate": null,
-      "clientCertificatePassword": null,
-      "clientCertificateSendChain": null
-    }
-    EOF
+    CLIENT_ID=$(az identity show -g "$RESOURCE_GROUP_MI" -n "$MI_NAME" --query clientId -o tsv)
+    TENANT_ID=$(az account show --query tenantId -o tsv)
+    SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+    
+    echo ""
+    echo "✅ Copy the following values into your GitHub repository secrets:"
+    echo ""
+    echo "AZURE_CLIENT_ID=$CLIENT_ID"
+    echo "AZURE_TENANT_ID=$TENANT_ID"
+    echo "AZURE_SUBSCRIPTION_ID=$SUBSCRIPTION_ID"
     ```
-
-
-
-# Get identity info
-CLIENT_ID=$(az identity show -g "$RESOURCE_GROUP_MI" -n "$MI_NAME" --query clientId -o tsv)
-TENANT_ID=$(az account show --query tenantId -o tsv)
-SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-
-echo ""
-echo "✅ Copy the following values into your GitHub repository secrets:"
-echo ""
-echo "AZURE_CLIENT_ID=$CLIENT_ID"
-echo "AZURE_TENANT_ID=$TENANT_ID"
-echo "AZURE_SUBSCRIPTION_ID=$SUBSCRIPTION_ID"
-
 
 Finally:
 
@@ -169,6 +141,21 @@ Finally:
 
 * Name it: `AZURE_CREDENTIALS`
 
-* Paste the JSON output as the value
+* Paste the output as the value
 
-Once done, the GitHub Action (.github/workflows/deploy.yml) will be able to authenticate and deploy your infrastructure.
+Once done, the GitHub Action (.github/workflows/deploy.yml) will be able to authenticate and deploy your infrastructure using the `deploy.yml` workflow.
+
+## Adding acrPull to the kubelet
+
+After the cluster is deployed and the Azure Container Registry is created, you can now give the user managed identity used by GitHub Actions the `User Access Administrator` role. This allows for the pipeline uer managed ID to assign a role to the kubelet ID:
+
+    ```bash
+    ACR_ID=$(az acr show -n "$REGISTRY_NAME" -g "$RESOURCE_GROUP" --query id -o tsv)
+
+    # Assign "User Access Administrator" to allow role assignments
+    az role assignment create \
+      --assignee-object-id "$MI_PRINCIPAL_ID" \
+      --role "User Access Administrator" \
+      --scope "$ACR_ID"
+    ```
+Once this is done, you can now run the `attach-aks-to-acr.yml` workflow.

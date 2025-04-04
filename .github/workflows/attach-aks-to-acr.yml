@@ -1,0 +1,52 @@
+name: Attach AKS to ACR with User Assigned Managed Identity
+description: |
+  This workflow attaches an Azure Kubernetes Service (AKS) cluster to an Azure Container Registry (ACR) using a User Assigned Managed Identity.
+  It assigns the AcrPull role to the kubelet identity of the AKS cluster.
+  This allows the AKS cluster to pull images from the ACR without needing to manage credentials.
+  The workflow is triggered manually via the GitHub Actions UI.
+
+on:
+  workflow_dispatch:
+
+env:
+  RESOURCE_GROUP: rg-pvt-aks-h100
+  LOCATION: eastus2
+  REGISTRY_NAME: gbbpvt
+  CLUSTER_NAME: pvt-aks-h100
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure with federated identity (User Assigned Managed Identity)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Assign AcrPull role to kubelet identity
+        run: |
+          KUBELET_ID=$(az aks show \
+            -g "${{ env.RESOURCE_GROUP }}" \
+            -n "${{ env.CLUSTER_NAME }}" \
+            --query identityProfile.kubeletidentity.objectId -o tsv)
+
+          ACR_ID=$(az acr show \
+            -g "${{ env.RESOURCE_GROUP }}" \
+            -n "${{ env.REGISTRY_NAME }}" \
+            --query id -o tsv)
+
+          echo "Assigning AcrPull role to kubelet identity..."
+          az role assignment create \
+            --assignee-object-id "$KUBELET_ID" \
+            --role "AcrPull" \
+            --scope "$ACR_ID"
