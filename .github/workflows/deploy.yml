@@ -2,12 +2,6 @@ name: Deploy AKS Cluster
 
 on:
   workflow_dispatch:
-  trigger:
-    branches:
-      - main
-    paths:
-      - 'main.bicep'
-      - '.github/workflows/deploy.yml'
 
 env:
   RESOURCE_GROUP: rg-pvt-aks-h100
