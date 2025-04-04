@@ -19,14 +19,21 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@main
+        uses: actions/checkout@v4
 
-      - name: Log in to Azure
+      - name: Log in to Azure with federated identity (User Assigned Managed Identity)
         uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          auth-type: ID_TOKEN
 
       - name: Create resource group if it doesn’t exist
         run: |
