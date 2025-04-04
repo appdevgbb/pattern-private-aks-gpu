@@ -57,24 +57,31 @@ Here is an example using User Assigned Managed Identity
 
     ```bash
     MI_NAME="github-actions-identity"
-    RESOURCE_GROUP="rg-pvt-aks-h100"
+    RESOURCE_GROUP_MI="rg-github-actions-identity"
     LOCATION="eastus2"
     REGISTRY_NAME="gbbpvt"
     
+    # Managed ID resource group
     az group create \
-      --name "$RESOURCE_GROUP" \
+      --name "$RESOURCE_GROUP_MI" \
       --location "$LOCATION"
 
     az identity create \
       --name "$MI_NAME" \
-      --resource-group "$RESOURCE_GROUP" \
+      --resource-group "$RESOURCE_GROUP_MI" \
+      --location "$LOCATION"
+
+    # deployment resource group
+    RESOURCE_GROUP="rg-pvt-aks-h100"
+    az group create \
+      --name "$RESOURCE_GROUP" \
       --location "$LOCATION"
     ```
 
     Save these values:
 
     ```bash
-    CLIENT_ID=$(az identity show -g "$RESOURCE_GROUP" -n "$MI_NAME" --query clientId -o tsv)
+    CLIENT_ID=$(az identity show -g "$RESOURCE_GROUP_MI" -n "$MI_NAME" --query clientId -o tsv)
     SUBSCRIPTION_ID=$(az account show --query id -o tsv)
     TENANT_ID=$(az account show --query tenantId -o tsv)
     
@@ -88,8 +95,7 @@ Here is an example using User Assigned Managed Identity
     Grant `Contributor` or a scoped role like `acrpull` if only pulling from ACR:
 
     ```bash
-    MI_PRINCIPAL_ID=$(az identity show -g "$RESOURCE_GROUP" -n "$MI_NAME" --query principalId -o tsv)
-    ACR_ID=$(az acr show -n "$REGISTRY_NAME" -g "$RESOURCE_GROUP" --query id -o tsv)
+    MI_PRINCIPAL_ID=$(az identity show -g "$RESOURCE_GROUP_MI" -n "$MI_NAME" --query principalId -o tsv)
     
     # Assign "Contributor" to the MI
     az role assignment create \
@@ -97,6 +103,8 @@ Here is an example using User Assigned Managed Identity
       --role Contributor \
       --scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP
     
+    ACR_ID=$(az acr show -n "$REGISTRY_NAME" -g "$RESOURCE_GROUP" --query id -o tsv)
+
     # Assign "User Access Administrator" to allow role assignments
     az role assignment create \
       --assignee-object-id "$MI_PRINCIPAL_ID" \
@@ -106,15 +114,17 @@ Here is an example using User Assigned Managed Identity
 
 1. Configure Federated Identity Credential for GitHub
 
-    Replace `<GITHUB_ORG>` and `<REPO>` accordingly:
+    Replace `GITHUB_ORG` and `REPO` accordingly:
 
     ```bash
+    GITHUB_ORG="appdevgbb"
+    REPO="pattern-private-aks-gpu"
     az identity federated-credential create \
       --name github-actions \
       --identity-name "$MI_NAME" \
-      --resource-group "$RESOURCE_GROUP" \
+      --resource-group "$RESOURCE_GROUP_MI" \
       --issuer "https://token.actions.githubusercontent.com" \
-      --subject "repo:<GITHUB_ORG>/<REPO>:ref:refs/heads/main" \
+      --subject "repo:$GITHUB_ORG/$REPO:ref:refs/heads/main" \
       --audiences "api://AzureADTokenExchange"
     ```
 
@@ -138,12 +148,10 @@ Here is an example using User Assigned Managed Identity
     EOF
     ```
 
-# Set variables
-RESOURCE_GROUP="rg-pvt-aks-h100"
-MI_NAME="github-actions-identity"
+
 
 # Get identity info
-CLIENT_ID=$(az identity show -g "$RESOURCE_GROUP" -n "$MI_NAME" --query clientId -o tsv)
+CLIENT_ID=$(az identity show -g "$RESOURCE_GROUP_MI" -n "$MI_NAME" --query clientId -o tsv)
 TENANT_ID=$(az account show --query tenantId -o tsv)
 SUBSCRIPTION_ID=$(az account show --query id -o tsv)
 

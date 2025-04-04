@@ -49,7 +49,7 @@ jobs:
         run: |
           KUBELET_ID=$(az aks show \
             -g "${{ env.RESOURCE_GROUP }}" \
-            -n "aks-${{ env.CLUSTER_NAME }}" \
+            -n "${{ env.CLUSTER_NAME }}" \
             --query identityProfile.kubeletidentity.objectId -o tsv)
 
           ACR_ID=$(az acr show \
