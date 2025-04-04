@@ -49,3 +49,4 @@ jobs:
             clusterName=${{ env.CLUSTER_NAME }}
             resourceGroupName=${{ env.RESOURCE_GROUP }}
             location=${{ env.LOCATION }}
+          failOnStdErr: true
