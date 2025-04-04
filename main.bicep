@@ -8,7 +8,7 @@ module infra 'aks.bicep' = {
   name: 'provisionInfra'
   scope: resourceGroup(resourceGroupName)
   params: {
-    managedClusterName: managedClusterName
+    clusterName: managedClusterName
     location: location
   }
 }
