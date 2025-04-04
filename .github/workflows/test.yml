@@ -1,0 +1,35 @@
+name: Step 4 - Test GPU Operator Installation
+
+on:
+  workflow_dispatch:
+
+env:
+  RESOURCE_GROUP: rg-pvt-aks-h100
+  CLUSTER_NAME: pvt-aks-h100
+
+jobs:
+  install-gpu-operator:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure with federated identity (User Assigned Managed Identity)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Apply pod-check-nvidia-smi.yaml and check logs
+        run: |
+          az aks command invoke \
+            --resource-group $RESOURCE_GROUP \
+            --name $CLUSTER_NAME \
+            --command "kubectl apply -f pod-check-nvidia-smi.yaml -n default && kubectl wait --for=condition=Succeeded pod/nvidia-gpu-test -n default --timeout=120s && kubectl logs nvidia-gpu-test -n default" \
+            --file pod-check-nvidia-smi.yaml
