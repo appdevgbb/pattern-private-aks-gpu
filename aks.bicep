@@ -1,5 +1,5 @@
 param clusterName string
-param managedClusterName string = 'aks-${clusterName}'
+param managedClusterName string = clusterName
 param vnetName string = 'vnet-${managedClusterName}'
 param subnetName string = 'subnet-${managedClusterName}'
 param location string

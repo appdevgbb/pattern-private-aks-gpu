@@ -1,6 +1,6 @@
 param registryName string
 param clusterName string
-param managedClusterName string = 'aks-${clusterName}'
+param managedClusterName string = clusterName
 param resourceGroupName string = 'rg-${managedClusterName}'
 param location string = 'eastus2'
 
