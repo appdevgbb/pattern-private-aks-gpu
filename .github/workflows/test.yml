@@ -31,5 +31,9 @@ jobs:
           az aks command invoke \
             --resource-group $RESOURCE_GROUP \
             --name $CLUSTER_NAME \
-            --command "kubectl apply -f pod-check-nvidia-smi.yaml -n default && kubectl wait --for=condition=Succeeded pod/nvidia-gpu-test -n default --timeout=120s && kubectl logs nvidia-gpu-test -n default" \
+            --command "kubectl apply -f pod-check-nvidia-smi.yaml -n default && kubectl wait --for=condition=Succeeded pod/nvidia-gpu-test -n default --timeout=120s" \
             --file pod-check-nvidia-smi.yaml
+          az aks command invoke \
+            --resource-group $RESOURCE_GROUP \
+            --name $CLUSTER_NAME \
+            --command "kubectl logs nvidia-gpu-test -n default"
