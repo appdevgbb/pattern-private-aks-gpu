@@ -47,7 +47,69 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2024-10-01' 
   properties: {
     kubernetesVersion: '1.30.10'
     dnsPrefix: '${managedClusterName}-dns'
-    agentPoolProfiles: [ ]
+    agentPoolProfiles: [
+      {
+        name: 'agentpool'
+        count: 2
+        vmSize: 'Standard_D4ds_v5'
+        osDiskSizeGB: 150
+        osDiskType: 'Ephemeral'
+        kubeletDiskType: 'OS'
+        maxPods: 110
+        type: 'VirtualMachineScaleSets'
+        maxCount: 5
+        minCount: 2
+        enableAutoScaling: true
+        scaleDownMode: 'Delete'
+        powerState: {
+          code: 'Running'
+        }
+        orchestratorVersion: '1.30.10'
+        enableNodePublicIP: false
+        mode: 'System'
+        osType: 'Linux'
+        osSKU: 'Ubuntu'
+        upgradeSettings: {
+          maxSurge: '10%'
+        }
+        enableFIPS: false
+        securityProfile: {
+          enableVTPM: false
+          enableSecureBoot: false
+        }
+      }
+      {
+        name: 'gpunp'
+        count: 1
+        vmSize: 'Standard_NC40ads_H100_v5'
+        osDiskSizeGB: 322
+        osDiskType: 'Ephemeral'
+        kubeletDiskType: 'OS'
+        maxPods: 30
+        type: 'VirtualMachineScaleSets'
+        availabilityZones: [
+          '2'
+        ]
+        enableAutoScaling: false
+        scaleDownMode: 'Delete'
+        powerState: {
+          code: 'Running'
+        }
+        orchestratorVersion: '1.30.10'
+        enableNodePublicIP: false
+        mode: 'User'
+        osType: 'Linux'
+        osSKU: 'Ubuntu'
+        upgradeSettings: {
+          maxSurge: '10%'
+        }
+        enableFIPS: false
+        securityProfile: {
+          enableVTPM: false
+          enableSecureBoot: false
+        }
+      }
+     ]
     servicePrincipalProfile: {
       clientId: 'msi'
     }
