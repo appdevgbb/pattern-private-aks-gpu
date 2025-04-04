@@ -3,6 +3,7 @@ param managedClusterName string = 'aks-${clusterName}'
 param vnetName string = 'vnet-${managedClusterName}'
 param subnetName string = 'subnet-${managedClusterName}'
 param location string
+param registryName string
 
 resource vnet 'Microsoft.Network/virtualNetworks@2023-05-01' = {
   name: vnetName
@@ -181,4 +182,52 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
   }
 }
 
+resource registries 'Microsoft.ContainerRegistry/registries@2024-11-01-preview' = {
+  name: registryName
+  location: location
+  sku: {
+    name: 'Premium'
+  }
+  properties: {
+    adminUserEnabled: false
+    networkRuleSet: {
+      defaultAction: 'Allow'
+      ipRules: []
+    }
+    policies: {
+      quarantinePolicy: {
+        status: 'disabled'
+      }
+      trustPolicy: {
+        type: 'Notary'
+        status: 'disabled'
+      }
+      retentionPolicy: {
+        days: 7
+        status: 'disabled'
+      }
+      exportPolicy: {
+        status: 'enabled'
+      }
+      azureADAuthenticationAsArmPolicy: {
+        status: 'enabled'
+      }
+      softDeletePolicy: {
+        retentionDays: 7
+        status: 'disabled'
+      }
+    }
+    encryption: {
+      status: 'disabled'
+    }
+    dataEndpointEnabled: false
+    publicNetworkAccess: 'Enabled'
+    networkRuleBypassOptions: 'AzureServices'
+    zoneRedundancy: 'Disabled'
+    anonymousPullEnabled: false
+    metadataSearch: 'Disabled'
+  }
+}
+
 output kubeletPrincipalId string = managedCluster.properties.identityProfile.kubeletidentity.objectId
+output registries string = registries.id

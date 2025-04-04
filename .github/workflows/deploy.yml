@@ -2,10 +2,11 @@ name: Deploy AKS Cluster
 
 on:
   workflow_dispatch:
-  push:
+  trigger:
+    branches:
+      - main
     paths:
-      - '**.bicep'
-      - 'deploy.sh'
+      - 'main.bicep'
       - '.github/workflows/deploy.yml'
 
 env:

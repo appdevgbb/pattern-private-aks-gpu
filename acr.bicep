@@ -1,56 +1,8 @@
 param principalId string
-param registryName string
-param location string 
-
-resource registries 'Microsoft.ContainerRegistry/registries@2024-11-01-preview' = {
-  name: registryName
-  location: location
-  sku: {
-    name: 'Premium'
-  }
-  properties: {
-    adminUserEnabled: false
-    networkRuleSet: {
-      defaultAction: 'Allow'
-      ipRules: []
-    }
-    policies: {
-      quarantinePolicy: {
-        status: 'disabled'
-      }
-      trustPolicy: {
-        type: 'Notary'
-        status: 'disabled'
-      }
-      retentionPolicy: {
-        days: 7
-        status: 'disabled'
-      }
-      exportPolicy: {
-        status: 'enabled'
-      }
-      azureADAuthenticationAsArmPolicy: {
-        status: 'enabled'
-      }
-      softDeletePolicy: {
-        retentionDays: 7
-        status: 'disabled'
-      }
-    }
-    encryption: {
-      status: 'disabled'
-    }
-    dataEndpointEnabled: false
-    publicNetworkAccess: 'Enabled'
-    networkRuleBypassOptions: 'AzureServices'
-    zoneRedundancy: 'Disabled'
-    anonymousPullEnabled: false
-    metadataSearch: 'Disabled'
-  }
-}
+param registries string
 
 resource acrPull 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(registries.id, principalId, 'acrpull')
+  name: guid(registries, principalId, 'acrpull')
   scope: registries
   properties: {
     roleDefinitionId: subscriptionResourceId(

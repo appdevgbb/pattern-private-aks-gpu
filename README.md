@@ -59,6 +59,7 @@ Here is an example using User Assigned Managed Identity
     MI_NAME="github-actions-identity"
     RESOURCE_GROUP="rg-pvt-aks-h100"
     LOCATION="eastus2"
+    REGISTRY_NAME="gbbpvt"
     
     az group create \
       --name "$RESOURCE_GROUP" \
@@ -87,10 +88,20 @@ Here is an example using User Assigned Managed Identity
     Grant `Contributor` or a scoped role like `acrpull` if only pulling from ACR:
 
     ```bash
+    MI_PRINCIPAL_ID=$(az identity show -g "$RESOURCE_GROUP" -n "$MI_NAME" --query principalId -o tsv)
+    ACR_ID=$(az acr show -n "$REGISTRY_NAME" -g "$RESOURCE_GROUP" --query id -o tsv)
+    
+    # Assign "Contributor" to the MI
     az role assignment create \
-      --assignee-object-id $(az identity show -g "$RESOURCE_GROUP" -n "$MI_NAME" --query principalId -o tsv) \
+      --assignee-object-id "$MI_PRINCIPAL_ID" \
       --role Contributor \
       --scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP
+    
+    # Assign "User Access Administrator" to allow role assignments
+    az role assignment create \
+      --assignee-object-id "$MI_PRINCIPAL_ID" \
+      --role "User Access Administrator" \
+      --scope "$ACR_ID"
     ```
 
 1. Configure Federated Identity Credential for GitHub

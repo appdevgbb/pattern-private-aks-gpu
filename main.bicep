@@ -10,6 +10,7 @@ module infra 'aks.bicep' = {
   params: {
     clusterName: managedClusterName
     location: location
+    registryName: registryName
   }
 }
 
@@ -18,7 +19,6 @@ module attachAcr 'acr.bicep' = {
   scope: resourceGroup(resourceGroupName)
   params: {
     principalId: infra.outputs.kubeletPrincipalId
-    registryName: registryName
-    location: location
+    registries: infra.outputs.registries
   }
 }
