@@ -29,10 +29,9 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-
       - name: Create resource group if it doesn’t exist
         run: |
-          az group create --name "${{ env.RESOURCE_GROUP }}" --location "${{ env.LOCATION }}" 
+          az group create --name "${{ env.RESOURCE_GROUP }}" --location "${{ env.LOCATION }}"
 
       - name: Deploy Bicep Template
         uses: azure/bicep-deploy@v2
@@ -45,3 +44,21 @@ jobs:
           template-file: ${{ env.TEMPLATE_FILE }}
           resource-group-name: ${{ env.RESOURCE_GROUP }}
           parameters: '{"registryName":"${{ env.REGISTRY_NAME }}","clusterName":"${{ env.CLUSTER_NAME }}","resourceGroupName":"${{ env.RESOURCE_GROUP }}","location":"${{ env.LOCATION }}"}'
+
+      - name: Assign AcrPull role to kubelet identity
+        run: |
+          KUBELET_ID=$(az aks show \
+            -g "${{ env.RESOURCE_GROUP }}" \
+            -n "aks-${{ env.CLUSTER_NAME }}" \
+            --query identityProfile.kubeletidentity.objectId -o tsv)
+
+          ACR_ID=$(az acr show \
+            -g "${{ env.RESOURCE_GROUP }}" \
+            -n "${{ env.REGISTRY_NAME }}" \
+            --query id -o tsv)
+
+          echo "Assigning AcrPull role to kubelet identity..."
+          az role assignment create \
+            --assignee-object-id "$KUBELET_ID" \
+            --role "AcrPull" \
+            --scope "$ACR_ID"
