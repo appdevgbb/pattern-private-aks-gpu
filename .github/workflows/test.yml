@@ -8,7 +8,7 @@ env:
   CLUSTER_NAME: pvt-aks-h100
 
 jobs:
-  install-gpu-operator:
+  test-gpu-operator:
     runs-on: ubuntu-latest
 
     permissions:

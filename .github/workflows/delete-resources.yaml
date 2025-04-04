@@ -1,4 +1,4 @@
-name: Delete AKS Resources
+name: Step 999 - Delete AKS Resources
 
 on:
   workflow_dispatch:
