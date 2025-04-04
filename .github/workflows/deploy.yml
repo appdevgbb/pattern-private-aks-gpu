@@ -43,6 +43,7 @@ jobs:
         uses: azure/arm-deploy@v1
         with:
           template: ${{ env.TEMPLATE_FILE }}
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
           parameters: |
             registryName=${{ env.REGISTRY_NAME }}
             managedClusterName=${{ env.CLUSTER_NAME }}
