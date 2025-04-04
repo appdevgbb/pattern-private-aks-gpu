@@ -182,7 +182,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
   }
 }
 
-resource registries 'Microsoft.ContainerRegistry/registries@2024-11-01-preview' = {
+resource registry 'Microsoft.ContainerRegistry/registries@2024-11-01-preview' = {
   name: registryName
   location: location
   sku: {
@@ -230,4 +230,4 @@ resource registries 'Microsoft.ContainerRegistry/registries@2024-11-01-preview' 
 }
 
 output kubeletPrincipalId string = managedCluster.properties.identityProfile.kubeletidentity.objectId
-output registryResource resource = registry
+output registryId string = registry.id
