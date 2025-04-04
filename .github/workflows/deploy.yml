@@ -40,13 +40,13 @@ jobs:
           az group create --name "${{ env.RESOURCE_GROUP }}" --location "${{ env.LOCATION }}" 
 
       - name: Deploy Bicep Template
-        uses: azure/arm-deploy@v1
+        uses: azure/bicep-deploy@v2
         with:
+          type: deployment
+          operation: create
+          name: aks-deployment
+          scope: resourceGroup
           template: ${{ env.TEMPLATE_FILE }}
           resourceGroupName: ${{ env.RESOURCE_GROUP }}
-          parameters: |
-            registryName=${{ env.REGISTRY_NAME }}
-            clusterName=${{ env.CLUSTER_NAME }}
-            resourceGroupName=${{ env.RESOURCE_GROUP }}
-            location=${{ env.LOCATION }}
+          parameters: '{"registryName":"${{ env.REGISTRY_NAME }}","clusterName":"${{ env.CLUSTER_NAME }}","resourceGroupName":"${{ env.RESOURCE_GROUP }}","location":"${{ env.LOCATION }}"}'
           failOnStdErr: true
