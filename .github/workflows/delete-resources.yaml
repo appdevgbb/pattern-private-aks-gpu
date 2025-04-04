@@ -1,0 +1,32 @@
+name: Delete AKS Resources
+
+on:
+  workflow_dispatch:
+
+env:
+  RESOURCE_GROUP: rg-pvt-aks-h100
+  LOCATION: eastus2
+
+jobs:
+  delete:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure with federated identity (User Assigned Managed Identity)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Delete Resource Group and all associated resources
+        run: |
+          echo "Deleting resource group: ${{ env.RESOURCE_GROUP }} in ${{ env.LOCATION }}"
+          az group delete --name "${{ env.RESOURCE_GROUP }}" --yes --no-wait
