@@ -46,5 +46,5 @@ jobs:
           resourceGroupName: ${{ env.RESOURCE_GROUP }}
           parameters: |
             registryName=${{ env.REGISTRY_NAME }}
-            managedClusterName=${{ env.CLUSTER_NAME }}
+            clusterName=${{ env.CLUSTER_NAME }}
             resourceGroupName=${{ env.RESOURCE_GROUP }}

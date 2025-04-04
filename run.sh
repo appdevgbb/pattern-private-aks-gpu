@@ -23,7 +23,7 @@ az deployment group create \
   --template-file "$TEMPLATE_FILE" \
   --parameters \
     registryName="$PARAM_REGISTRY_NAME" \
-    managedClusterName="$PARAM_CLUSTER_NAME" \
+    clusterName="$PARAM_CLUSTER_NAME" \
     resourceGroupName="$RESOURCE_GROUP"
 
 # Done
