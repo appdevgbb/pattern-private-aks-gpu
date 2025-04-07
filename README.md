@@ -37,10 +37,17 @@ PARAM_CLUSTER_NAME="pvt-aks-h100"
 
 ## Repository Structure:
 
-- main.bicep – Main Bicep template with modular infrastructure
-- pod-check-nvidia-smi.yaml – Pod spec to validate NVIDIA GPU access
-- run.sh – Script to provision infrastructure and install GPU operator
-- .github/workflows/deploy.yml – GitHub Actions workflow for CI deployment
+- `main.bicep` – Main Bicep template with modular infrastructure
+- `pod-check-nvidia-smi.yml `– Pod spec to validate NVIDIA GPU access
+-` run.sh` – Script to provision infrastructure and install GPU operator
+
+GitHub Action workflows:
+
+- Step 1 - `.github/workflows/deploy.yml` – Deployment workflow
+- Step 2 - `.github/workflows/attach-aks-to-acr.yml` - Attach AKS to ACR with User Assigned Managed ID
+- Step 3 - `.github/workflows/nvidia-gpu-operator.yml` - Install the NVIDIA Operator
+- Step 4 - `.github/workflows/test.yml` - Test the GPU by running a pod with `nvidia-smi`
+- Step 9999 - `.github/workflows/delete-resources.yml` - Delete the resources from Azure
 
 ## GitHub Actions Integration
 

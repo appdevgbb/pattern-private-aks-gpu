@@ -26,13 +26,13 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Apply pod-check-nvidia-smi.yaml and check logs
+      - name: Apply pod-check-nvidia-smi.yml and check logs
         run: |
           az aks command invoke \
             --resource-group $RESOURCE_GROUP \
             --name $CLUSTER_NAME \
-            --command "kubectl apply -f pod-check-nvidia-smi.yaml -n default && kubectl wait --for=condition=Succeeded pod/nvidia-gpu-test -n default --timeout=120s" \
-            --file pod-check-nvidia-smi.yaml
+            --command "kubectl apply -f pod-check-nvidia-smi.yml -n default && kubectl wait --for=condition=Succeeded pod/nvidia-gpu-test -n default --timeout=120s" \
+            --file pod-check-nvidia-smi.yml
           az aks command invoke \
             --resource-group $RESOURCE_GROUP \
             --name $CLUSTER_NAME \
