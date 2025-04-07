@@ -61,10 +61,6 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2024-10-01' 
         maxCount: 5
         minCount: 2
         enableAutoScaling: true
-        scaleDownMode: 'Delete'
-        powerState: {
-          code: 'Running'
-        }
         orchestratorVersion: '1.30.10'
         enableNodePublicIP: false
         mode: 'System'
@@ -92,11 +88,11 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2024-10-01' 
           '2'
         ]
         enableAutoScaling: false
-        scaleDownMode: 'Delete'
-        powerState: {
-          code: 'Running'
-        }
         orchestratorVersion: '1.30.10'
+        gpuProfile: {
+          driver: 'None'
+        }
+
         enableNodePublicIP: false
         mode: 'User'
         osType: 'Linux'
