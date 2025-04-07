@@ -40,7 +40,7 @@ resource workspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview'
   }
 }
 
-resource managedCluster 'Microsoft.ContainerService/managedClusters@2024-10-01' = {
+resource managedCluster 'Microsoft.ContainerService/managedClusters@2025-01-01' = {
   name: managedClusterName
   location: location
   identity: {
