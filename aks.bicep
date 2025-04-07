@@ -4,6 +4,7 @@ param vnetName string = 'vnet-${managedClusterName}'
 param subnetName string = 'subnet-${managedClusterName}'
 param location string
 param registryName string
+param gpuSKU string
 
 resource vnet 'Microsoft.Network/virtualNetworks@2023-05-01' = {
   name: vnetName
@@ -78,7 +79,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2024-10-01' 
       {
         name: 'gpunp'
         count: 1
-        vmSize: 'Standard_NC40ads_H100_v5'
+        vmSize: gpuSKU
         osDiskSizeGB: 322
         osDiskType: 'Ephemeral'
         kubeletDiskType: 'OS'

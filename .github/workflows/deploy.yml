@@ -9,6 +9,7 @@ env:
   REGISTRY_NAME: gbbpvt
   CLUSTER_NAME: pvt-aks-h100
   TEMPLATE_FILE: main.bicep
+  GPUSKU: Standard_NC40ads_H100_v5
 
 jobs:
   deploy:
@@ -43,4 +44,4 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           template-file: ${{ env.TEMPLATE_FILE }}
           resource-group-name: ${{ env.RESOURCE_GROUP }}
-          parameters: '{"registryName":"${{ env.REGISTRY_NAME }}","clusterName":"${{ env.CLUSTER_NAME }}","resourceGroupName":"${{ env.RESOURCE_GROUP }}","location":"${{ env.LOCATION }}"}'
+          parameters: '{"registryName":"${{ env.REGISTRY_NAME }}","clusterName":"${{ env.CLUSTER_NAME }}","resourceGroupName":"${{ env.RESOURCE_GROUP }}","location":"${{ env.LOCATION }}"}, "gpuVMSKU":"${{ env.GPUSKU }}"'
